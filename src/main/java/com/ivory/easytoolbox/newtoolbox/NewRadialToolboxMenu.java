@@ -37,13 +37,13 @@ public class NewRadialToolboxMenu extends AbstractSimiScreen {
     private int hoveredSlot;
     private boolean scrollMode;
     private int scrollSlot = 0;
-    private List<ToolboxBlockEntity> toolboxes;
-    private ToolboxBlockEntity selectedBox;
+    private List<ItemToolboxSource> toolboxes;
+    private ItemToolboxSource selectedBox;
 
     private static final int DEPOSIT = -7;
     private static final int UNEQUIP = -5;
 
-    public NewRadialToolboxMenu(List<ToolboxBlockEntity> toolboxes, NewRadialToolboxMenu.State state, @Nullable ToolboxBlockEntity selectedBox) {
+    public NewRadialToolboxMenu(List<ItemToolboxSource> toolboxes, NewRadialToolboxMenu.State state, @Nullable ItemToolboxSource selectedBox) {
         this.toolboxes = toolboxes;
         this.state = state;
         hoveredSlot = -1;
@@ -133,12 +133,10 @@ public class NewRadialToolboxMenu extends AbstractSimiScreen {
                 ms.translate(-12, -12, 0);
 
                 if (state == NewRadialToolboxMenu.State.SELECT_ITEM || state == NewRadialToolboxMenu.State.SELECT_ITEM_UNEQUIP) {
-                    ToolboxInventory inv = selectedBox.inventory;
-                    ItemStack stackInSlot = inv.filters.get(slot);
+                    ItemStack stackInSlot = selectedBox.filter(slot);
 
-                    if (!stackInSlot.isEmpty()) {
-                        boolean empty = inv.getStackInSlot(slot * STACKS_PER_COMPARTMENT)
-                                .isEmpty();
+                    if (!stackInSlot.isEmpty()) {selectedBox
+                        boolean empty = selectedBox.compartmentEmpty(slot);
 
                         (empty ? AllGuiTextures.TOOLBELT_INACTIVE_SLOT : AllGuiTextures.TOOLBELT_SLOT)
                                 .render(graphics, 0, 0);
@@ -157,15 +155,15 @@ public class NewRadialToolboxMenu extends AbstractSimiScreen {
 
                     if (slot < toolboxes.size()) {
                         AllGuiTextures.TOOLBELT_SLOT.render(graphics, 0, 0);
-                        ToolboxBlockEntity toolboxBlockEntity = toolboxes.get(slot);
-                        GuiGameElement.of(AllBlocks.TOOLBOXES.get(toolboxBlockEntity.getColor())
+                        ItemToolboxSource box = toolboxes.get(slot);
+                        GuiGameElement.of(AllBlocks.TOOLBOXES.get(box.color())
                                         .asStack())
                                 .at(3, 3)
                                 .render(graphics);
 
                         if (slot == (scrollMode ? scrollSlot : hoveredSlot)) {
                             AllGuiTextures.TOOLBELT_SLOT_HIGHLIGHT.render(graphics, -1, -1);
-                            tip = toolboxBlockEntity.getDisplayName();
+                            tip = box.displayName();
                         }
                     } else
                         AllGuiTextures.TOOLBELT_EMPTY_SLOT.render(graphics, 0, 0);
@@ -257,8 +255,8 @@ public class NewRadialToolboxMenu extends AbstractSimiScreen {
 
         if (selected < 0)
             return;
-        ToolboxInventory inv = selectedBox.inventory;
-        ItemStack stackInSlot = inv.filters.get(selected);
+        ToolboxInventory inv = ToolboxAccess.inventory(selectedBox);
+        ItemStack stackInSlot = ToolboxAccess.filters(inv).get(selected);
         if (stackInSlot.isEmpty())
             return;
         if (inv.getStackInSlot(selected * STACKS_PER_COMPARTMENT)
@@ -281,8 +279,8 @@ public class NewRadialToolboxMenu extends AbstractSimiScreen {
             for (int i = 0; i < 10; i++) {
 
                 if (state == NewRadialToolboxMenu.State.SELECT_ITEM || state == NewRadialToolboxMenu.State.SELECT_ITEM_UNEQUIP) {
-                    ToolboxInventory inv = selectedBox.inventory;
-                    ItemStack stackInSlot = inv.filters.get(scrollSlot);
+                    ToolboxInventory inv = ToolboxAccess.inventory(selectedBox);
+                    ItemStack stackInSlot = ToolboxAccess.filters(inv).get(scrollSlot);
                     if (!stackInSlot.isEmpty() && !inv.getStackInSlot(scrollSlot * STACKS_PER_COMPARTMENT)
                             .isEmpty())
                         break;
@@ -360,8 +358,8 @@ public class NewRadialToolboxMenu extends AbstractSimiScreen {
             if (hotbarBinds[i].matches(code, scanCode)) {
 
                 if (state == NewRadialToolboxMenu.State.SELECT_ITEM || state == NewRadialToolboxMenu.State.SELECT_ITEM_UNEQUIP) {
-                    ToolboxInventory inv = selectedBox.inventory;
-                    ItemStack stackInSlot = inv.filters.get(i);
+                    ToolboxInventory inv = ToolboxAccess.inventory(selectedBox);
+                    ItemStack stackInSlot = ToolboxAccess.filters(inv).get(i);
                     if (stackInSlot.isEmpty() || inv.getStackInSlot(i * STACKS_PER_COMPARTMENT)
                             .isEmpty())
                         return false;
