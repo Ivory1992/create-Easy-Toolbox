@@ -6,7 +6,6 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.simibubi.create.AllBlocks;
 import com.simibubi.create.AllKeys;
-import com.simibubi.create.content.equipment.toolbox.*;
 import com.simibubi.create.foundation.gui.AllGuiTextures;
 import com.simibubi.create.foundation.gui.AllIcons;
 import com.simibubi.create.foundation.utility.CreateLang;
@@ -15,7 +14,6 @@ import net.createmod.catnip.animation.AnimationTickHolder;
 import net.createmod.catnip.gui.AbstractSimiScreen;
 import net.createmod.catnip.gui.element.GuiGameElement;
 import net.createmod.catnip.math.AngleHelper;
-import net.createmod.catnip.platform.CatnipServices;
 import net.createmod.catnip.theme.Color;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.KeyMapping;
@@ -24,11 +22,10 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
-
-import static com.simibubi.create.content.equipment.toolbox.ToolboxInventory.STACKS_PER_COMPARTMENT;
 
 public class NewRadialToolboxMenu extends AbstractSimiScreen {
 
@@ -135,7 +132,7 @@ public class NewRadialToolboxMenu extends AbstractSimiScreen {
                 if (state == NewRadialToolboxMenu.State.SELECT_ITEM || state == NewRadialToolboxMenu.State.SELECT_ITEM_UNEQUIP) {
                     ItemStack stackInSlot = selectedBox.filter(slot);
 
-                    if (!stackInSlot.isEmpty()) {selectedBox
+                    if (!stackInSlot.isEmpty()) {
                         boolean empty = selectedBox.compartmentEmpty(slot);
 
                         (empty ? AllGuiTextures.TOOLBELT_INACTIVE_SLOT : AllGuiTextures.TOOLBELT_SLOT)
@@ -233,9 +230,9 @@ public class NewRadialToolboxMenu extends AbstractSimiScreen {
             if (state == NewRadialToolboxMenu.State.DETACH)
                 return;
             else if (state == NewRadialToolboxMenu.State.SELECT_BOX)
-                toolboxes.forEach(be -> CatnipServices.NETWORK.sendToServer(new ToolboxDisposeAllPacket(be.getBlockPos())));
+                toolboxes.forEach(box -> PacketDistributor.sendToServer(new NewDisposePacket(box.invSlot())));
             else
-                CatnipServices.NETWORK.sendToServer(new ToolboxDisposeAllPacket(selectedBox.getBlockPos()));
+                PacketDistributor.sendToServer(new NewDisposePacket(selectedBox.invSlot()));
             return;
         }
 
@@ -244,33 +241,30 @@ public class NewRadialToolboxMenu extends AbstractSimiScreen {
 
         if (state == NewRadialToolboxMenu.State.DETACH) {
             if (selected == UNEQUIP)
-                CatnipServices.NETWORK.sendToServer(
-                        new ToolboxEquipPacket(null, selected, minecraft.player.getInventory().selected));
+                PacketDistributor.sendToServer(
+                        new NewEquipPacket(-1, selected, minecraft.player.getInventory().selected));
             return;
         }
 
         if (selected == UNEQUIP)
-            CatnipServices.NETWORK.sendToServer(new ToolboxEquipPacket(selectedBox.getBlockPos(), selected,
+            PacketDistributor.sendToServer(new NewEquipPacket(selectedBox.invSlot(), selected,
                     minecraft.player.getInventory().selected));
 
         if (selected < 0)
             return;
-        ToolboxInventory inv = ToolboxAccess.inventory(selectedBox);
-        ItemStack stackInSlot = ToolboxAccess.filters(inv).get(selected);
-        if (stackInSlot.isEmpty())
+        if (selectedBox.filter(selected).isEmpty())
             return;
-        if (inv.getStackInSlot(selected * STACKS_PER_COMPARTMENT)
-                .isEmpty())
+        if (selectedBox.compartmentEmpty(selected))
             return;
 
-        CatnipServices.NETWORK.sendToServer(new ToolboxEquipPacket(selectedBox.getBlockPos(), selected,
+        PacketDistributor.sendToServer(new NewEquipPacket(selectedBox.invSlot(), selected,
                 minecraft.player.getInventory().selected));
     }
 
     @Override
     public boolean mouseScrolled(double pMouseX, double pMouseY, double pScrollX, double pScrollY) {
         Window window = getMinecraft().getWindow();
-        double hoveredX = pMouseY - window.getGuiScaledWidth() / 2;
+        double hoveredX = pMouseX - window.getGuiScaledWidth() / 2;
         double hoveredY = pMouseY - window.getGuiScaledHeight() / 2;
         double distance = hoveredX * hoveredX + hoveredY * hoveredY;
         if (distance <= 150) {
@@ -279,10 +273,7 @@ public class NewRadialToolboxMenu extends AbstractSimiScreen {
             for (int i = 0; i < 10; i++) {
 
                 if (state == NewRadialToolboxMenu.State.SELECT_ITEM || state == NewRadialToolboxMenu.State.SELECT_ITEM_UNEQUIP) {
-                    ToolboxInventory inv = ToolboxAccess.inventory(selectedBox);
-                    ItemStack stackInSlot = ToolboxAccess.filters(inv).get(scrollSlot);
-                    if (!stackInSlot.isEmpty() && !inv.getStackInSlot(scrollSlot * STACKS_PER_COMPARTMENT)
-                            .isEmpty())
+                    if (!selectedBox.filter(scrollSlot).isEmpty() && !selectedBox.compartmentEmpty(scrollSlot))
                         break;
                 }
 
@@ -336,7 +327,7 @@ public class NewRadialToolboxMenu extends AbstractSimiScreen {
 
             if (state == NewRadialToolboxMenu.State.SELECT_ITEM_UNEQUIP && selected == UNEQUIP) {
                 if (toolboxes.size() > 1) {
-                    CatnipServices.NETWORK.sendToServer(new ToolboxEquipPacket(selectedBox.getBlockPos(), selected,
+                    PacketDistributor.sendToServer(new NewEquipPacket(selectedBox.invSlot(), selected,
                             minecraft.player.getInventory().selected));
                     state = NewRadialToolboxMenu.State.SELECT_BOX;
                     return true;
@@ -358,10 +349,7 @@ public class NewRadialToolboxMenu extends AbstractSimiScreen {
             if (hotbarBinds[i].matches(code, scanCode)) {
 
                 if (state == NewRadialToolboxMenu.State.SELECT_ITEM || state == NewRadialToolboxMenu.State.SELECT_ITEM_UNEQUIP) {
-                    ToolboxInventory inv = ToolboxAccess.inventory(selectedBox);
-                    ItemStack stackInSlot = ToolboxAccess.filters(inv).get(i);
-                    if (stackInSlot.isEmpty() || inv.getStackInSlot(i * STACKS_PER_COMPARTMENT)
-                            .isEmpty())
+                    if (selectedBox.filter(i).isEmpty() || selectedBox.compartmentEmpty(i))
                         return false;
                 }
 
