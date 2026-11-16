@@ -1,6 +1,6 @@
 # Create: Easy Toolbox
 
-[![GitHub](https:img.shields.io/badge/GitHub-Project_on_GitHub-181717?logo=github&logoColor=white)](https://github.com/Ivory1992/create-Easy-Toolbox.git)
+[<img alt="GitHub" src="https:img.shields.io/badge/GitHub-Project_on_GitHub-181717?logo=github&amp;logoColor=white"/>](https://github.com/Ivory1992/create-Easy-Toolbox.git)
 
 ## Description
 Open the create toolbox menu from the inventory without needing to place it first
