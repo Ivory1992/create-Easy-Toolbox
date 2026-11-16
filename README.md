@@ -1,6 +1,5 @@
 # Create: Easy Toolbox
 
-<a href="https://github.com/Ivory1992/create-Easy-Toolbox.git"><img src="https:img.shields.io/badge/Project_on_GitHub-181717?logo=github&logoColor=white" alt="GitHub"></a>
 [![GitHub](https:img.shields.io/badge/GitHub-Project_on_GitHub-181717?logo=github&logoColor=white)](https://github.com/Ivory1992/create-Easy-Toolbox.git)
 
 ## Description
