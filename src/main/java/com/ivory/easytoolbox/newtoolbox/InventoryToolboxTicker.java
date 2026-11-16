@@ -32,6 +32,11 @@ public final class InventoryToolboxTicker {
             String key = String.valueOf(hotbar);
             if (!all.contains(key))
                 continue;
+            if (root.getCompound("CreateToolboxData").contains(key)){
+                all.remove(key);
+                sendData = true;
+                continue;
+            }
 
             CompoundTag entry = all.getCompound(key);
             int invSlot = entry.getInt("InvSlot");
@@ -44,8 +49,10 @@ public final class InventoryToolboxTicker {
             }
             ItemToolboxSource box = boxes.get(invSlot);
 
-            // toolbox moved/gone, or bad data: detach
-            if (box == null || invSlot == hotbar || compartment < 0 || compartment >= 8) {
+            if (box == null)
+                continue;
+
+            if (invSlot == hotbar || compartment < 0 || compartment >= 8) {
                 all.remove(key);
                 sendData = true;
                 continue;

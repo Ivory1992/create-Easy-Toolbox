@@ -1,11 +1,11 @@
 package com.ivory.easytoolbox.newtoolbox;
 
+import com.ivory.easytoolbox.EasyToolboxKey;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.simibubi.create.AllBlocks;
-import com.simibubi.create.AllKeys;
 import com.simibubi.create.foundation.gui.AllGuiTextures;
 import com.simibubi.create.foundation.gui.AllIcons;
 import com.simibubi.create.foundation.utility.CreateLang;
@@ -370,8 +370,7 @@ public class NewRadialToolboxMenu extends AbstractSimiScreen {
     @Override
     public boolean keyReleased(int code, int scanCode, int modifiers) {
         InputConstants.Key mouseKey = InputConstants.getKey(code, scanCode);
-        if (AllKeys.TOOLBELT.getKeybind()
-                .isActiveAndMatches(mouseKey)) {
+        if (EasyToolboxKey.INVENTORY_TOOLBOX.isActiveAndMatches(mouseKey)) {
             onClose();
             return true;
         }

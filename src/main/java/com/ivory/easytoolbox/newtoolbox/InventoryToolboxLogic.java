@@ -16,6 +16,8 @@ public final class InventoryToolboxLogic {
     private InventoryToolboxLogic() {}
 
     public static void equip(ServerPlayer player, int toolboxInvSlot, int compartment, int hotbarSlot) {
+        if (player.getPersistentData().getCompound("CreateToolboxData").contains(String.valueOf(hotbarSlot)))
+            return;
         if (hotbarSlot < 0 || hotbarSlot > 8)
             return;
         if (toolboxInvSlot == hotbarSlot)
