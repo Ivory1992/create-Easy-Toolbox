@@ -2,27 +2,29 @@
 
 
 
-## Description
-Open the create toolbox menu from the inventory without needing to place it first
+## About
+This is a Create addon that allows you to open the create toolbox menu from the inventory, you don't need to place it first anymore!
 
 ## Features
-- Allow access the create toolbox from inventory
+- Allow access the Create toolbox from inventory
 
 ## Instructions
-- Put a toolbox in on of your inventory slots exept your main hand
+- Put a toolbox in one of your inventory slots except your selected hotbar slot (main hand)
 - Press and hold the Access Inventory Toolboxes key bind to access the toolbox menu
-- Simular to create's vanilla toolbox, the menu will list available toolboxes in your inventory if you have more than one
+- Similar to Create's vanilla toolbox, the menu will list available toolboxes in your inventory if you have more than one
 
   **⚠️ Important ⚠️**
-- The item taken from a toolbox will only recognize it's toolbox if it was on the same slot when the item was taken
+- The link between an item and the toolbox it came from will break if the toolbox moved to another slot
 - It is recommended to leave the toolbox in one slot 
-- Any inventory toolbox has it's own key to access it
-- Use the vanilla create key to access any placed one
+- Inventory toolboxes has their own key (R-Alt by default) to access them and can be rebound, you can still access the placed ones with the vanilla create key
+
+## Note
+- The toolbox can be accessed only if it's in the player's inventory, other inventory mods aren't supported yet
 
 ## Requirements
 - Minecraft 1.21.1
-- Neoforge 21.1.250
-- Create 6.0.10
+- Neoforge 21.1.250 or higher
+- Create 6.0.10 or higher
 
 ## License
 Mit
