@@ -16,15 +16,15 @@ This is a Create addon that allows you to open the create toolbox menu from the 
   **⚠️ Important ⚠️**
 - The link between an item and the toolbox it came from will break if the toolbox moved to another slot
 - It is recommended to leave the toolbox in one slot 
-- Inventory toolboxes has their own key (R-Alt by default) to access them and can be rebound, you can still access the placed ones with the vanilla create key
+- Inventory toolboxes have their own key (R-Alt/AltGr by default) to access them and can be rebound, you can still access the placed ones with the vanilla create key
 
 ## Note
-- The toolbox can be accessed only if it's in the player's inventory, other inventory mods aren't supported yet
+- The toolbox can be accessed only if it's in the player's inventory, Backpack mods aren't supported yet
 
 ## Requirements
 - Minecraft 1.21.1
 - Neoforge 21.1.250 or higher
-- Create 6.0.10 or higher
+- Create 6.0.10 
 
 ## License
-Mit
+MIT
